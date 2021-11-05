@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BLIU</string>
+    <string name="edit_message">Escreva a mensagen</string>
+    <string name="button_send">Enviar</string>
+    <string name="text_bliu">Bliu</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
