@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">entrega2</string>
+    <string name="Pets">tittle_pets</string>
+    <string name="tittle_pets">Pets</string>
+    <string name="button_add_pet">Adicionar</string>
+    <string name="tittle_petss">🐾 Pets</string>
+</resources>
