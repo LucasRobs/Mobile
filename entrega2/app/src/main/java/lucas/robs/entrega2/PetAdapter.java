@@ -1,6 +1,7 @@
 package lucas.robs.entrega2;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +39,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
             holder.textName.setText(pet.name);
             holder.textYear.setText(Integer.toString(pet.age)+" anos");
             holder.textRace.setText(pet.race);
+            holder.dotsButton.setTag(position);
             holder.dotsButton.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("WrongConstant")
                 @Override
@@ -57,11 +59,14 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(
-                        imageView.getContext(),
-                        "You Clicked : ",
-                        Toast.LENGTH_SHORT
-                ).show();
+                if(item.getTitle().equals("🗑️ Apagar")){
+                    int index = (int) view.getTag();
+                    pets.remove(index);
+                    pushMainActivity(view);
+                }else{
+                    int index = (int) view.getTag();
+                    pushEditPet(view, pets.get(index));
+                }
                 return true;
             }
         });
@@ -89,5 +94,17 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
         }
 
 
+    }
+
+    public void pushMainActivity(View view) {
+        Intent intent = new Intent(view.getContext(), MainActivity.class);
+        intent.putExtra(MainActivity.PETS, pets);
+        view.getContext().startActivity(intent);
+    }
+
+    public void pushEditPet(View view, Pet pet) {
+        Intent intent = new Intent(view.getContext(), AddPet.class);
+        intent.putExtra(MainActivity.PETS_SELECT, pet);
+        view.getContext().startActivity(intent);
     }
 }

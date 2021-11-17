@@ -1,20 +1,16 @@
 package lucas.robs.entrega2;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-
 
 public class AddPet extends AppCompatActivity {
     String iconSelected;
@@ -23,6 +19,7 @@ public class AddPet extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pet);
+        setEditPet();
     }
 
     public void onRadioButtonClicked(View view) {
@@ -78,5 +75,47 @@ public class AddPet extends AppCompatActivity {
 
         Pet pet = new Pet(name,age,race,iconSelected);
         return pet;
+    }
+
+
+
+    public void setEditPet(){
+        Pet pet = getIntentPetSelect();
+        if(pet != null){
+            EditText editText = (EditText) findViewById(R.id.editTextName);
+            editText.setText(pet.name);
+
+            editText = (EditText) findViewById(R.id.editTextAge);
+            editText.setText(pet.age);
+
+            editText = (EditText) findViewById(R.id.editTextRace);
+            editText.setText(pet.race);
+
+            iconSelected = pet.icone;
+
+            Button button = (Button) findViewById(R.id.button2);
+            button.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("WrongConstant")
+                @Override
+                public void onClick(View view) {
+                    submitEdit(view);
+                }
+            });
+        }
+    }
+
+    public void submitEdit(View view){
+        Pet newPet = createPet();
+        ArrayList<Pet> pets = getIntentPets();
+        Pet pet = getIntentPetSelect();
+        int IndexInIntent = pets.indexOf(pet);
+        pets.set(IndexInIntent, newPet);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.PETS, pets);
+        startActivity(intent);
+    }
+
+    public Pet getIntentPetSelect(){
+        return (Pet) getIntent().getSerializableExtra(MainActivity.PETS_SELECT);
     }
 }
