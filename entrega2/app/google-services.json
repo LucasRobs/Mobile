@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "764966918105",
+    "project_id": "mobilepets-c218e",
+    "storage_bucket": "mobilepets-c218e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764966918105:android:d662a1e70c55e38ba0abc8",
+        "android_client_info": {
+          "package_name": "lucas.robs.entrega2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "764966918105-63prir8h108qmcf6sdqvjcqtrohr2g39.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBu1NRkqCfcQnNvXAjiQ9MCDPa35rQyxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "764966918105-63prir8h108qmcf6sdqvjcqtrohr2g39.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

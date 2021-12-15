@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,10 +21,11 @@ public class MainActivity extends AppCompatActivity {
     private PetAdapter petAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = new Intent(this, Login.class);
+        startActivity(intent);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setList();
-
     }
 
     public void setList(){

@@ -4,11 +4,14 @@
 
     <application
         android:allowBackup="true"
-        android:label="PetPass"
         android:icon="@drawable/e6922e080540a82e946f8089401b95cc"
+        android:label="PetPass"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Entrega2">
+        <activity
+            android:name=".Login"
+            android:exported="true" />
         <activity
             android:name=".AddPet"
             android:exported="true" />
