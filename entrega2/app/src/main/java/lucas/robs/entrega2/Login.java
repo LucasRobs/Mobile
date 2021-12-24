@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -45,15 +46,12 @@ public class Login extends AppCompatActivity {
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
-
+        Log.i("printei", response.toString());
         if (result.getResultCode() == RESULT_OK) {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            Log.i("c","asd");
-            Log.i("a",user.toString());
-            Log.i("c","asd");
-
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else {
-            Log.i("c","d");
+            Toast.makeText(this, "Login falhou! tente novamente.", Toast.LENGTH_SHORT).show();
         }
     }
     @Override

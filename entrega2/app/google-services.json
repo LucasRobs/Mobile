@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "764966918105",
+    "firebase_url": "https://mobilepets-c218e-default-rtdb.firebaseio.com",
     "project_id": "mobilepets-c218e",
     "storage_bucket": "mobilepets-c218e.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "764966918105-275c51pkmul2pd5lnnrpb5gmgkclem92.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "lucas.robs.entrega2",
+            "certificate_hash": "b934db935ec3c7d7558b3da2a43d8c815e6b18c9"
+          }
+        },
         {
           "client_id": "764966918105-63prir8h108qmcf6sdqvjcqtrohr2g39.apps.googleusercontent.com",
           "client_type": 3

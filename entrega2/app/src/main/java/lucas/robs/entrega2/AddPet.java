@@ -45,8 +45,7 @@ public class AddPet extends AppCompatActivity {
     }
 
     public void pushHome(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        onBackPressed();
     }
 
     public void submit(View view){

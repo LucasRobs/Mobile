@@ -7,7 +7,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -21,10 +23,15 @@ public class MainActivity extends AppCompatActivity {
     private PetAdapter petAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent = new Intent(this, Login.class);
-        startActivity(intent);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setList();
+        Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         setList();
     }
 
@@ -32,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         if(getIntentPets() != null) {
             pets = getIntentPets();
             petAdapter = new PetAdapter(pets);
-        }/*else{
-            Pet pet = new Pet("Tyler",2,"Border Collie","🐶");
+        }else{
+            /*Pet pet = new Pet("Tyler",2,"Border Collie","🐶");
             pets.add(pet);
             pet = new Pet("Lilih",1,"Chartreux","🐱");
             pets.add(pet);
@@ -58,13 +65,13 @@ public class MainActivity extends AppCompatActivity {
             pet = new Pet("Uzumake",20,"Humano","\uD83E\uDD11");
             pets.add(pet);
             pet = new Pet("Baitinga",20,"Humano","\uD83E\uDD20");
-            pets.add(pet);
+            pets.add(pet);*/
             Intent intent = new Intent(this,MainActivity.class);
             intent.putExtra(MainActivity.PETS, pets);
             startActivity(intent);
-        }*/
+        }
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false );
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(petAdapter );
     }

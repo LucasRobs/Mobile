@@ -37,10 +37,8 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
             Pet pet = pets.get(position);
             holder.textIcon.setText(pet.icone);
             holder.textName.setText(pet.name);
-            holder.textYear.setText(Integer.toString(pet.age)+" anos");
-            holder.textRace.setText(pet.race);
-            holder.dotsButton.setTag(position);
-            holder.dotsButton.setOnClickListener(new View.OnClickListener() {
+            holder.textIcon.setTag(position);
+            holder.textIcon.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("WrongConstant")
                 @Override
                 public void onClick(View view ) {
@@ -53,7 +51,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
     }
 
     public void onClickPopUp(View view) {
-        ImageView imageView = (ImageView) view.findViewById(R.id.dotsButton);
+        TextView imageView = (TextView) view.findViewById(R.id.textIcon);
         PopupMenu popup = new PopupMenu(imageView.getContext(), view);
         popup.getMenuInflater().inflate(R.menu.menu_actions, popup.getMenu());
 
@@ -62,7 +60,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
                 if(item.getTitle().equals("🗑️ Apagar")){
                     int index = (int) view.getTag();
                     pets.remove(index);
-                    pushMainActivity(view);
+                    notifyDataSetChanged();
                 }else{
                     int index = (int) view.getTag();
                     pushEditPet(view, pets.get(index));
@@ -88,9 +86,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
             super(itemView);
             textIcon = (TextView) itemView.findViewById(R.id.textIcon);
             textName = (TextView) itemView.findViewById(R.id.textName);
-            textYear = (TextView) itemView.findViewById(R.id.textYear);
-            textRace = (TextView) itemView.findViewById(R.id.textRace);
-            dotsButton = (ImageView) itemView.findViewById(R.id.dotsButton);
         }
 
 
