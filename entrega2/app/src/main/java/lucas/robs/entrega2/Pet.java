@@ -17,6 +17,6 @@ public class Pet implements Serializable {
 
     @Override
     public String toString() {
-        return System.getProperty("line.separator")+"{"+icone +" Nome: "+ name +", Idade: " + age +", Raça: " + race+"}";
+        return System.getProperty("line.separator")+"{Icone: "+icone +" Nome: "+ name +", Idade: " + age +", Raça: " + race+"}";
     }
 }

@@ -1,18 +1,28 @@
 package lucas.robs.entrega2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonReader;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,12 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<Pet> pets = new ArrayList<>();
     private PetAdapter petAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setList();
-        Toast.makeText(this, FirebaseAuth.getInstance().getCurrentUser().getUid(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -35,45 +45,34 @@ public class MainActivity extends AppCompatActivity {
         setList();
     }
 
-    public void setList(){
-        if(getIntentPets() != null) {
-            pets = getIntentPets();
-            petAdapter = new PetAdapter(pets);
-        }else{
-            /*Pet pet = new Pet("Tyler",2,"Border Collie","🐶");
-            pets.add(pet);
-            pet = new Pet("Lilih",1,"Chartreux","🐱");
-            pets.add(pet);
-            pet = new Pet("Emma",4,"Angorá","🐱");
-            pets.add(pet);
-            pet = new Pet("Dirlândia",21,"Gata","\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDDB1");
-            pets.add(pet);
-            pet = new Pet("Marcelo",24,"Humano","\uD83D\uDC68\uD83C\uDFFB\u200D\uD83D\uDCBB");
-            pets.add(pet);
-            pet = new Pet("Pianko",21,"Humano","\uD83D\uDC35");
-            pets.add(pet);
-            pet = new Pet("Yago",21,"Humano","\uD83D\uDE48");
-            pets.add(pet);
-            pet = new Pet("Jaime",21,"Humano","\uD83D\uDE49");
-            pets.add(pet);
-            pet = new Pet("Davi",24,"Humano","\uD83D\uDE4A");
-            pets.add(pet);
-            pet = new Pet("Lucca",23,"Humano","\uD83D\uDC12");
-            pets.add(pet);
-            pet = new Pet("Caio",22,"Humano","\uD83D\uDD7A\uD83C\uDFFB");
-            pets.add(pet);
-            pet = new Pet("Uzumake",20,"Humano","\uD83E\uDD11");
-            pets.add(pet);
-            pet = new Pet("Baitinga",20,"Humano","\uD83E\uDD20");
-            pets.add(pet);*/
-            Intent intent = new Intent(this,MainActivity.class);
-            intent.putExtra(MainActivity.PETS, pets);
-            startActivity(intent);
-        }
+    public void setList() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false );
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(petAdapter );
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child(user.getUid()).child("pets").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Gson gson = new Gson();
+                    if (task.getResult().getValue() != null) {
+                        DataSnapshot snapshot = task.getResult();
+                        for (DataSnapshot entity : snapshot.getChildren()) {
+                            Pet pet = gson.fromJson(entity.getValue().toString(), Pet.class);
+                            pets.add(pet);
+                        }
+                        petAdapter = new PetAdapter(pets);
+                        recyclerView.setAdapter(petAdapter);
+                        //Log.i("firebase", pets.toString());
+                    }
+                } else {
+                    Log.e("firebase", "Error getting data", task.getException());
+                }
+            }
+        });
+
     }
 
     public void pushAddPet(View view) {
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public ArrayList<Pet> getIntentPets(){
+    public ArrayList<Pet> getIntentPets() {
         return (ArrayList<Pet>) getIntent().getSerializableExtra(MainActivity.PETS);
     }
 }

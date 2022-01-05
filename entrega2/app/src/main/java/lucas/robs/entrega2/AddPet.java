@@ -7,8 +7,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -49,11 +56,12 @@ public class AddPet extends AppCompatActivity {
     }
 
     public void submit(View view){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Pet pet = createPet();
-        ArrayList<Pet> pets = getIntentPets();
-        pets.add(pet);
+        Gson gson = new Gson();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid()+"/pets");
+        mDatabase.push().setValue(gson.toJson(pet));
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(MainActivity.PETS, pets);
         startActivity(intent);
     }
 
