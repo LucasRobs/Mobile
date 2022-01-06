@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
                         DataSnapshot snapshot = task.getResult();
                         for (DataSnapshot entity : snapshot.getChildren()) {
                             Pet pet = gson.fromJson(entity.getValue().toString(), Pet.class);
+                            pet.setId(entity.getKey());
+
                             pets.add(pet);
                         }
                         petAdapter = new PetAdapter(pets);

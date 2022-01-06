@@ -2,6 +2,7 @@ package lucas.robs.entrega2;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -37,7 +43,7 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
             Pet pet = pets.get(position);
             holder.textIcon.setText(pet.icone);
             holder.textName.setText(pet.name);
-            holder.textIcon.setTag(position);
+            holder.textIcon.setTag(position +" "+ pet.id);
             holder.textIcon.setOnClickListener(new View.OnClickListener() {
                 @SuppressLint("WrongConstant")
                 @Override
@@ -58,12 +64,19 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 if(item.getTitle().equals("🗑️ Apagar")){
-                    int index = (int) view.getTag();
-                    pets.remove(index);
+                    String tag = (String) view.getTag();
+                    int position = getPosition(tag);
+                    pets.remove(position);
+
+                    String key = getKey(tag);
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid()+"/pets/"+key);
+                    mDatabase.removeValue();
                     notifyDataSetChanged();
                 }else{
-                    int index = (int) view.getTag();
-                    pushEditPet(view, pets.get(index));
+                    String tag = (String) view.getTag();
+                    int position = getPosition(tag);
+                    pushEditPet(view, pets.get(position));
                 }
                 return true;
             }
@@ -74,6 +87,10 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
     public int getItemCount() {
         return pets.size();
     }
+
+    public int getPosition(String tag){return Integer.parseInt(tag.split(" ")[0]);}
+
+    public String getKey(String tag){return tag.split(" ")[1];}
 
     public class ViewHolderPet extends RecyclerView.ViewHolder{
         public TextView textIcon;
@@ -89,12 +106,6 @@ public class PetAdapter extends RecyclerView.Adapter<PetAdapter.ViewHolderPet> {
         }
 
 
-    }
-
-    public void pushMainActivity(View view) {
-        Intent intent = new Intent(view.getContext(), MainActivity.class);
-        intent.putExtra(MainActivity.PETS, pets);
-        view.getContext().startActivity(intent);
     }
 
     public void pushEditPet(View view, Pet pet) {

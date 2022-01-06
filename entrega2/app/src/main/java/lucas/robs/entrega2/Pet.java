@@ -3,6 +3,7 @@ package lucas.robs.entrega2;
 import java.io.Serializable;
 
 public class Pet implements Serializable {
+    String id;
     String name;
     int age;
     String race;
@@ -13,6 +14,14 @@ public class Pet implements Serializable {
         this.age = age;
         this.race = race;
         this.icone = icone;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

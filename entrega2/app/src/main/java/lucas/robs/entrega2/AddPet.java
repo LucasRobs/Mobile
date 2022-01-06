@@ -3,6 +3,7 @@ package lucas.robs.entrega2;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,9 +57,9 @@ public class AddPet extends AppCompatActivity {
     }
 
     public void submit(View view){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Pet pet = createPet();
         Gson gson = new Gson();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid()+"/pets");
         mDatabase.push().setValue(gson.toJson(pet));
         Intent intent = new Intent(this, MainActivity.class);
@@ -89,11 +90,12 @@ public class AddPet extends AppCompatActivity {
     public void setEditPet(){
         Pet pet = getIntentPetSelect();
         if(pet != null){
+
             EditText editText = (EditText) findViewById(R.id.editTextName);
             editText.setText(pet.name);
 
             editText = (EditText) findViewById(R.id.editTextAge);
-            editText.setText(pet.age);
+            editText.setText(pet.age+"");
 
             editText = (EditText) findViewById(R.id.editTextRace);
             editText.setText(pet.race);
@@ -113,12 +115,13 @@ public class AddPet extends AppCompatActivity {
 
     public void submitEdit(View view){
         Pet newPet = createPet();
-        ArrayList<Pet> pets = getIntentPets();
         Pet pet = getIntentPetSelect();
-        int IndexInIntent = pets.indexOf(pet);
-        pets.set(IndexInIntent, newPet);
+        String key = pet.id;
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid()+"/pets/"+key);
+        Gson gson = new Gson();
+        mDatabase.setValue(gson.toJson(newPet));
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(MainActivity.PETS, pets);
         startActivity(intent);
     }
 
