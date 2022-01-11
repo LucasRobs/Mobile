@@ -16,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -56,21 +57,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mMap = googleMap;
         MapHelper mapHelper = new MapHelper();
-
+        googleMap.setInfoWindowAdapter(new MarkerInfoAdapter(this));
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         LatLng sydney2 = new LatLng(-35, 152);
 
-        mMap.addMarker(new MarkerOptions()
+        /*mMap.addMarker(new MarkerOptions()
                 .position(sydney)
-                .title("Marker in Sydney"));
-        mMap.addMarker(new MarkerOptions()
+                .title("Marker in Sydney"));*/
+        Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(sydney2)
                 .title("Marker in Sydney")
                 .icon(
                         mapHelper.vectorToBitmap(this, R.drawable.ic_walker, ContextCompat.getColor(this, R.color.black)))
 
         );
+        marker.setTag("RATINHOOOO");
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
