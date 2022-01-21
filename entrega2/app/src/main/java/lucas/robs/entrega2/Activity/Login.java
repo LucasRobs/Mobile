@@ -1,4 +1,4 @@
-package lucas.robs.entrega2;
+package lucas.robs.entrega2.Activity;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -14,13 +14,14 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
 
+import lucas.robs.entrega2.R;
+
 public class Login extends AppCompatActivity {
+    boolean isPetFriend = false;
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
             new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
@@ -44,12 +45,30 @@ public class Login extends AppCompatActivity {
         signInLauncher.launch(signInIntent);
     }
 
+    public void createSignInIntentPetFriend(View view) {
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build()
+        );
+        isPetFriend = true;
+        // Create and launch sign-in intent
+        Intent signInIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build();
+        signInLauncher.launch(signInIntent);
+    }
+
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         Log.i("printei", response.toString());
         if (result.getResultCode() == RESULT_OK) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            if(isPetFriend){
+                Intent intent = new Intent(this, MainActivityPetFriend.class);
+                startActivity(intent);
+            }else{
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
         } else {
             Toast.makeText(this, "Login falhou! tente novamente.", Toast.LENGTH_SHORT).show();
         }

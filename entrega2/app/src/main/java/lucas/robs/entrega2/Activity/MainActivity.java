@@ -1,4 +1,4 @@
-package lucas.robs.entrega2;
+package lucas.robs.entrega2.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,9 +29,18 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
+import lucas.robs.entrega2.MapHelper;
+import lucas.robs.entrega2.MarkerInfoAdapter;
+import lucas.robs.entrega2.Pet;
+import lucas.robs.entrega2.PetAdapter;
+import lucas.robs.entrega2.R;
+import lucas.robs.entrega2.Walker;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String PETS = "INTENT_PETS";
     public static final String PETS_SELECT = "INTENT_PETS_SELECT";
+    public static final String CHAT_SELECT = "INTENT_CHAT_SELECT";
+
 
     ArrayList<Pet> pets = new ArrayList<>();
     private PetAdapter petAdapter;
@@ -62,17 +71,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng(-34, 151);
         LatLng sydney2 = new LatLng(-35, 152);
 
-        /*mMap.addMarker(new MarkerOptions()
+        mMap.addMarker(new MarkerOptions()
                 .position(sydney)
-                .title("Marker in Sydney"));*/
+                .title("Marker in Sydney"));
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(sydney2)
                 .title("Marker in Sydney")
                 .icon(
                         mapHelper.vectorToBitmap(this, R.drawable.ic_walker, ContextCompat.getColor(this, R.color.black)))
-
         );
-        marker.setTag("RATINHOOOO");
+        Walker walker = new Walker(1234567890, "Dirlandia");
+        marker.setTag(walker);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
@@ -120,4 +129,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(intent);
     }
 
+    public void pushTour(View view) {
+        Intent intent = new Intent(this, Tour.class);
+        startActivity(intent);
+    }
 }

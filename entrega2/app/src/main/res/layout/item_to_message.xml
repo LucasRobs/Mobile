@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/img_message_user"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/txt_msg"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="8dp"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque luctus consequat libero, id eleifend ante efficitur et. Aenean et est eros. Fusce pretium accumsan tempor. Phasellus quis mattis quam. Aliquam ultricies eget est quis volutpat. Duis nibh lectus, scelerisque quis lacinia eu, dignissim at lacus. Vivamus eu convallis ligula. Donec vehicula dapibus quam, vitae pharetra turpis. Suspendisse suscipit sem erat, non dictum ex sagittis eget."
+        app:layout_constraintEnd_toStartOf="@+id/img_message_user"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/img_message_user" />
+</androidx.constraintlayout.widget.ConstraintLayout>

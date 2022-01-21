@@ -3,11 +3,11 @@ package lucas.robs.entrega2;
 import java.io.Serializable;
 
 public class Pet implements Serializable {
-    String id;
-    String name;
-    int age;
-    String race;
-    String icone;
+    public String id;
+    public String name;
+    public int age;
+    public String race;
+    public String icone;
 
     public Pet(String name, int age, String race, String icone) {
         this.name = name;

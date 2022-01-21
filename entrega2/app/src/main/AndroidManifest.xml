@@ -9,12 +9,14 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +26,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Entrega2">
         <activity
-            android:name=".Login"
+            android:name=".Activity.Tour"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.MainActivityPetFriend"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Chat"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,25 +43,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".AddPet"
+            android:name=".Activity.AddPet"
             android:exported="true" />
-
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:name=".Activity.MainActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
-
     </application>
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 </manifest>
