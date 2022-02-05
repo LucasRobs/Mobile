@@ -8,8 +8,9 @@
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.19583333333333333" />
-        <entry key="app/src/main/res/layout/activity_main_pet_friend.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/activity_tour.xml" value="0.18" />
+        <entry key="app/src/main/res/layout/activity_main_pet_friend.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_tour.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/item_booking_request.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_from_message.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_to_message.xml" value="0.33" />
         <entry key="app/src/main/res/layout/marker_info.xml" value="0.25" />

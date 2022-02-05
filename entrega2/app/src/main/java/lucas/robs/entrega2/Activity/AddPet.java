@@ -62,7 +62,7 @@ public class AddPet extends AppCompatActivity {
         Pet pet = createPet();
         Gson gson = new Gson();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid()+"/pets");
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users/"+user.getUid()+"/pets");
         mDatabase.push().setValue(gson.toJson(pet));
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -120,7 +120,7 @@ public class AddPet extends AppCompatActivity {
         Pet pet = getIntentPetSelect();
         String key = pet.id;
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid()+"/pets/"+key);
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users/"+user.getUid()+"/pets/"+key);
         Gson gson = new Gson();
         mDatabase.setValue(gson.toJson(newPet));
         Intent intent = new Intent(this, MainActivity.class);

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import lucas.robs.entrega2.MapHelper;
 import lucas.robs.entrega2.MarkerInfoAdapter;
+import lucas.robs.entrega2.OpenBooking;
 import lucas.robs.entrega2.Pet;
 import lucas.robs.entrega2.PetAdapter;
 import lucas.robs.entrega2.R;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<Pet> pets = new ArrayList<>();
     private PetAdapter petAdapter;
     private GoogleMap mMap;
-
+    private Boolean petsWereLoaded = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,18 +98,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         recyclerView.setLayoutManager(linearLayoutManager);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users");
         mDatabase.child(user.getUid()).child("pets").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() ) {
                     Gson gson = new Gson();
-                    if (task.getResult().getValue() != null) {
+                    if (task.getResult().getValue() != null && !petsWereLoaded) {
+                        petsWereLoaded = true;
                         DataSnapshot snapshot = task.getResult();
                         for (DataSnapshot entity : snapshot.getChildren()) {
                             Pet pet = gson.fromJson(entity.getValue().toString(), Pet.class);
                             pet.setId(entity.getKey());
-
                             pets.add(pet);
                         }
                         petAdapter = new PetAdapter(pets);
@@ -132,5 +133,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void pushTour(View view) {
         Intent intent = new Intent(this, Tour.class);
         startActivity(intent);
+    }
+
+    public void findBoking(View view) {
+        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+        mDatabase.getReference("/openForBooking").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Gson gson = new Gson();
+                    if (task.getResult().getValue() != null) {
+                        DataSnapshot snapshot = task.getResult();
+                        for (DataSnapshot entity : snapshot.getChildren()) {
+
+                            OpenBooking openBooking = gson.fromJson(entity.getValue().toString(), OpenBooking.class);
+                            Log.i("fire", openBooking.toString());
+
+                            if(!openBooking.hasRequestBooking){
+                                updateStatusBookin(true,openBooking );
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    Log.e("firebase", "Error getting data", task.getException());
+                }
+            }
+        });
+    }
+    public void updateStatusBookin(boolean statusBooking, OpenBooking openBooking){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Gson gson = new Gson();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("/openForBooking").child(openBooking.idFriendPet);
+        openBooking.setIdPetOwner(user.getUid());
+        openBooking.setHasRequestBooking(statusBooking);
+        mDatabase.setValue(gson.toJson(openBooking));
     }
 }

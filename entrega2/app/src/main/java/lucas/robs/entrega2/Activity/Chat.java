@@ -1,7 +1,9 @@
 package lucas.robs.entrega2.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -12,48 +14,110 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.xwray.groupie.GroupAdapter;
 import com.xwray.groupie.Item;
 import com.xwray.groupie.ViewHolder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lucas.robs.entrega2.Contact;
+import lucas.robs.entrega2.Message;
+import lucas.robs.entrega2.Pet;
+import lucas.robs.entrega2.PetAdapter;
 import lucas.robs.entrega2.R;
+import lucas.robs.entrega2.Walker;
 import lucas.robs.entrega2.WalkerAdapter.ViewHolderWalker;
 
 public class Chat extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-    }
-    /*private FirebaseUser user;
+    private GroupAdapter adapter;
+    private FirebaseUser user;
     private EditText editChat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        RecyclerView rv = findViewById(R.id.recycler_chat);
         editChat = findViewById(R.id.edit_chat);
-        Button btnChat = findViewById(R.id.btn_chat);
-
-        btnChat.setOnClickListener(new View().OnClickListener() {
-            @Override
-            public void onClick (View v){
-                sendMessage();
-            }
-        });
-
+        setListMenssages();
     }
 
-    private void sendMessage() {
+    public void setListMenssages() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_chat);
+        adapter = new GroupAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child("chat");
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                Gson gson = new Gson();
+                if (snapshot.getValue() != null) {
+                    adapter.clear();
+                    for (DataSnapshot entity : snapshot.getChildren()) {
+                            Message msg = gson.fromJson(entity.getValue().toString(), Message.class);
+                            adapter.add(new MessageItem(msg));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("firebase", "Error getting data" + error);
+            }
+        };
+        mDatabase.addValueEventListener(postListener);
+/*
+        mDatabase.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+                if (task.isSuccessful()) {
+
+                    Gson gson = new Gson();
+                    if (task.getResult().getValue() != null) {
+
+                        DataSnapshot snapshot = task.getResult();
+                        for (DataSnapshot entity : snapshot.getChildren()) {
+                            Message msg = gson.fromJson(entity.getValue().toString(), Message.class);
+
+                            adapter.add(new MessageItem(msg));
+                        }
+
+                    }
+                } else {
+                }
+            }
+        });
+*/
+    }
+
+    public void sendMessage(View v) {
         String text = editChat.getText().toString();
 
         editChat.setText(null);
@@ -71,75 +135,7 @@ public class Chat extends AppCompatActivity {
         if (!message.getText().isEmpty()) {
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid() + "/chat");
             Gson gson = new Gson();
-            mDatabase.push().setValue(gson.toJson(message))
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d("Teste", documentReference.getId());
-
-                            Contact contact = new Contact();
-                            contact.setUuid(toId);
-                            contact.setUsername(user.getUsername());
-                            contact.setPhotoUrl(user.getProfileUrl());
-                            contact.setTimestamp(message.getTimestamp());
-                            contact.setLastMessage(message.getText());
-
-                            FirebaseFirestore.getInstance().collection("/last-messages")
-                                    .document(fromId)
-                                    .collection("contacts")
-                                    .document(toId)
-                                    .set(contact);
-
-                            if (!user.isOnline()) {
-                                Notification notification = new Notification();
-                                notification.setFromId(message.getFromId());
-                                notification.setToId(message.getToId());
-                                notification.setTimestamp(message.getTimestamp());
-                                notification.setText(message.getText());
-                                notification.setFromName(me.getUsername());
-
-                                FirebaseFirestore.getInstance().collection("/notifications")
-                                        .document(user.getToken())
-                                        .set(notification);
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e("Teste", e.getMessage(), e);
-                        }
-                    });
-
-            FirebaseFirestore.getInstance().collection("/conversations")
-                    .document(toId)
-                    .collection(fromId)
-                    .add(message)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d("Teste", documentReference.getId());
-
-                            Contact contact = new Contact();
-                            contact.setUuid(toId);
-                            contact.setUsername(me.getUsername());
-                            contact.setPhotoUrl(me.getProfileUrl());
-                            contact.setTimestamp(message.getTimestamp());
-                            contact.setLastMessage(message.getText());
-
-                            FirebaseFirestore.getInstance().collection("/last-messages")
-                                    .document(toId)
-                                    .collection("contacts")
-                                    .document(fromId)
-                                    .set(contact);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e("Teste", e.getMessage(), e);
-                        }
-                    });
+            mDatabase.push().setValue(gson.toJson(message));
         }
     }
 
@@ -168,12 +164,12 @@ public class Chat extends AppCompatActivity {
         @Override
         public int getLayout() {
             return message.getFromId().equals(FirebaseAuth.getInstance().getUid())
-                    ? R.layout.item_from_message
-                    : R.layout.item_to_message;
+                    ? R.layout.item_to_message
+                    : R.layout.item_from_message;
         }
     }
 
     public Walker getIntentWalkerSelector() {
         return (Walker) getIntent().getSerializableExtra(MainActivity.CHAT_SELECT);
-    }*/
+    }
 }

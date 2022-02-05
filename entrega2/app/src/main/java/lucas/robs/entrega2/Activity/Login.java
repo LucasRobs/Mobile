@@ -14,10 +14,17 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import java.util.Arrays;
 import java.util.List;
 
+import lucas.robs.entrega2.InfoUser;
 import lucas.robs.entrega2.R;
 
 public class Login extends AppCompatActivity {
@@ -36,12 +43,14 @@ public class Login extends AppCompatActivity {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.GoogleBuilder().build()
         );
+        isPetFriend = false;
 
         // Create and launch sign-in intent
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build();
+        setUser();
         signInLauncher.launch(signInIntent);
     }
 
@@ -55,12 +64,19 @@ public class Login extends AppCompatActivity {
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build();
+        setUser();
         signInLauncher.launch(signInIntent);
     }
-
+private void setUser(){
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    Log.i("fire", user.getDisplayName());
+    InfoUser infoUser = new InfoUser( user.getDisplayName(),user.getUid(), user.getEmail());
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users/"+user.getUid()+"/infoUser");
+    Gson gson = new Gson();
+    mDatabase.setValue(gson.toJson(infoUser));
+}
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
-        Log.i("printei", response.toString());
         if (result.getResultCode() == RESULT_OK) {
             if(isPetFriend){
                 Intent intent = new Intent(this, MainActivityPetFriend.class);
