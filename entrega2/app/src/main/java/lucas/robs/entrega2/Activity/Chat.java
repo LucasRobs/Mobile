@@ -71,7 +71,7 @@ public class Chat extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child(user.getUid()).child("chat");
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("chats").child(getIntentIdChat());
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -133,7 +133,7 @@ public class Chat extends AppCompatActivity {
         message.setText(text);
 
         if (!message.getText().isEmpty()) {
-            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(user.getUid() + "/chat");
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("chats").child(getIntentIdChat());
             Gson gson = new Gson();
             mDatabase.push().setValue(gson.toJson(message));
         }
@@ -167,6 +167,10 @@ public class Chat extends AppCompatActivity {
                     ? R.layout.item_to_message
                     : R.layout.item_from_message;
         }
+    }
+
+    public String getIntentIdChat() {
+        return getIntent().getStringExtra(Tour.ID_CHAT);
     }
 
     public Walker getIntentWalkerSelector() {

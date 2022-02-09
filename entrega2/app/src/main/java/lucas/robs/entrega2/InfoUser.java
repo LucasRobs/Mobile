@@ -26,4 +26,12 @@ public class InfoUser {
         return email;
     }
 
+    @Override
+    public String toString() {
+        return "InfoUser{" +
+                "name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

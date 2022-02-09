@@ -7,10 +7,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,17 +47,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String PETS_SELECT = "INTENT_PETS_SELECT";
     public static final String CHAT_SELECT = "INTENT_CHAT_SELECT";
 
-
     ArrayList<Pet> pets = new ArrayList<>();
+    private FusedLocationProviderClient fusedLocationClient;
     private PetAdapter petAdapter;
     private GoogleMap mMap;
     private Boolean petsWereLoaded = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setList();
         setMap();
+
     }
 
     @Override
@@ -68,22 +75,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         MapHelper mapHelper = new MapHelper();
         googleMap.setInfoWindowAdapter(new MarkerInfoAdapter(this));
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        LatLng sydney2 = new LatLng(-35, 152);
 
-        mMap.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
-        Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(sydney2)
-                .title("Marker in Sydney")
-                .icon(
-                        mapHelper.vectorToBitmap(this, R.drawable.ic_walker, ContextCompat.getColor(this, R.color.black)))
-        );
-        Walker walker = new Walker(1234567890, "Dirlandia");
-        marker.setTag(walker);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        Log.i("fire", "aaaaaaaaa");
+
+                        if (location != null) {
+                            LatLng youLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(youLocation));
+
+                            LatLng sydney = new LatLng(location.getLatitude(),location.getLongitude());
+                            LatLng sydney2 = new LatLng(location.getLatitude()+1, +1);
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(sydney)
+                                    .title("Marker in Sydney"));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(youLocation, 17F));
+
+                            Log.i("fire", location.toString());
+                        }
+                    }
+                });
+
+
     }
 
     public void setMap() {
@@ -169,4 +189,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         openBooking.setHasRequestBooking(statusBooking);
         mDatabase.setValue(gson.toJson(openBooking));
     }
+
 }

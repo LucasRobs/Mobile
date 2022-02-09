@@ -2,25 +2,26 @@ package lucas.robs.entrega2.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,7 +31,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 import com.xwray.groupie.GroupAdapter;
 import com.xwray.groupie.Item;
 import com.xwray.groupie.ViewHolder;
@@ -38,12 +38,15 @@ import com.xwray.groupie.ViewHolder;
 import lucas.robs.entrega2.InfoUser;
 import lucas.robs.entrega2.MapHelper;
 import lucas.robs.entrega2.MarkerInfoAdapter;
-import lucas.robs.entrega2.Message;
 import lucas.robs.entrega2.OpenBooking;
 import lucas.robs.entrega2.R;
-import lucas.robs.entrega2.Walker;
 
 public class MainActivityPetFriend extends AppCompatActivity implements OnMapReadyCallback {
+    public static final String ID_PET_OWNER = "INTENT_ID_PET_OWNER";
+    public static final String ID_PET_FRIEND = "INTENT_ID_PET_FRIEND";
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private Intent intent;
     private GoogleMap mMap;
     private GroupAdapter adapter;
 
@@ -63,14 +66,29 @@ public class MainActivityPetFriend extends AppCompatActivity implements OnMapRea
         MapHelper mapHelper = new MapHelper();
         googleMap.setInfoWindowAdapter(new MarkerInfoAdapter(this));
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        LatLng sydney2 = new LatLng(-35, 152);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        Log.i("fire", "aaaaaaaaa");
 
-        mMap.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
+                        if (location != null) {
+                            LatLng youLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(youLocation));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                            LatLng sydney = new LatLng(location.getLatitude(),location.getLongitude());
+                            LatLng sydney2 = new LatLng(location.getLatitude()+1, +1);
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(sydney)
+                                    .title("Marker in Sydney"));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(youLocation, 17F));
+
+                            Log.i("fire", location.toString());
+                        }
+                    }
+                });
     }
 
     public void setMap() {
@@ -80,7 +98,6 @@ public class MainActivityPetFriend extends AppCompatActivity implements OnMapRea
     }
 
     public void pushTour(View view) {
-        Intent intent = new Intent(this, Tour.class);
         startActivity(intent);
     }
 
@@ -154,6 +171,9 @@ public class MainActivityPetFriend extends AppCompatActivity implements OnMapRea
                             InfoUser infoUser = gson.fromJson(snapshot.getValue().toString(), InfoUser.class);
                             TextView txt = viewHolder.itemView.findViewById(R.id.textView7);
                             txt.setText(infoUser.getName());
+                            intent = new Intent(viewHolder.itemView.getContext(), Tour.class);
+                            intent.putExtra(ID_PET_OWNER, openBooking.getIdPetOwner());
+                            intent.putExtra(ID_PET_FRIEND, openBooking.getIdFriendPet());
                         }
                     } else {
                         Log.e("firebase", "Error getting data", task.getException());
@@ -167,5 +187,8 @@ public class MainActivityPetFriend extends AppCompatActivity implements OnMapRea
         public int getLayout() {
             return R.layout.item_booking_request;
         }
+    }
+    public String getIntentUserSelect(){
+        return getIntent().getStringExtra(MainActivityPetFriend.ID_PET_OWNER);
     }
 }
